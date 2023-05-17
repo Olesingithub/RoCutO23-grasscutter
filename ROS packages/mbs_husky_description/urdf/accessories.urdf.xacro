@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot name="accessories" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Link Ouster holder base to front mount -->
+  <link name="auxiliary_sensor_frame">
+    <visual>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/auxiliary_frame.dae" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/auxiliary_frame.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ouster_holder_base_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="auxiliary_sensor_frame" />
+    <origin xyz="0 0 0.25" rpy="0 0 1.57" />
+  </joint>
+
+  <!-- Link Ouster to base -->
+  <link name="os_sensor">
+    <visual>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/os1_64.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/os1_64.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ouster_joint" type="fixed">
+    <parent link="auxiliary_sensor_frame" />
+    <child link="os_sensor" />
+    <origin xyz="0 0 0.46" rpy="0 0 -1.57" />
+  </joint>
+
+  <!-- Link Emlid to base -->
+  <link name="reach_rs">
+    <visual>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/reach_rs2.dae" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/reach_rs2.stl"/>
+    </geometry>
+    </collision>
+  </link>
+
+  <joint name="emlid_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="reach_rs" />
+    <origin xyz="0 -0.43 0.41" rpy="0 0 1.5708" />
+  </joint>
+  
+</robot>

@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<robot name="accessories" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <material name="grey">
+    <color rgba="0.3254901960784314 0.3843137254901961 0.403921568627451 1.0" />
+  </material>
+
+  <!-- Link Ouster holder base to Husky top plate -->
+  <link name="lidar_plate_frame">
+    <visual>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/lidar_plate.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/lidar_plate.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ouster_holder_base_joint" type="fixed">
+    <parent link="top_plate_link" />
+    <child link="lidar_plate_frame" />
+    <origin xyz="0.299 0 0.010" rpy="1.5708 0 0" />
+  </joint>
+
+  <!-- Link Ouster to base -->
+  <link name="os_sensor">
+    <visual>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/os1_64.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/os1_64.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ouster_joint" type="fixed">
+    <parent link="lidar_plate_frame" />
+    <child link="os_sensor" />
+    <origin xyz="0 0.052 0" rpy="-1.5708 0 0" />
+  </joint>
+
+  <!-- Link Emlid to base -->
+  <link name="reach_rs">
+    <visual>
+      <geometry>
+          <mesh filename="package://mbs_husky_description/meshes/reach_rs2.dae" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/reach_rs2.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    </collision>
+  </link>
+
+  <joint name="emlid_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="reach_rs" />
+    <origin xyz="-0.27 -0.27 0.465" rpy="0 0 1.5708" />
+  </joint>
+
+  <!-- Phidgets IMU: instead of adding it here, I changed the one in include/husky.urdf.xacro -->
+
+  <link name="imu_link" />
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="phidgets_imu_link" />
+    <origin xyz="0.19 0 0.149" rpy="0 0 1.5708" />
+  </joint>
+
+  <!-- Plastic roof -->
+
+  <link name="plastic_roof_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/plastic_roof.dae" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://husky_description/meshes/top_plate.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <!-- Attach default top plate -->
+  <joint name="plastic_roof_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="plastic_roof_link"/>
+    <origin xyz="0.0812 0 0.405" rpy="0 0 0"/>
+  </joint>
+  <!-- Default top plate front link -->
+  <link name="plastic_roof_front_link"/>
+  <joint name="plastic_roof_front_joint" type="fixed">
+    <parent link="plastic_roof_link" />
+    <child link="plastic_roof_front_link"/>
+    <origin xyz="0.36367 0 0.00639" rpy="0 0 0"/>
+  </joint>
+  <!-- Default top plate rear link-->
+  <link name="plastic_roof_rear_link"/>
+  <joint name="plastic_roof_rear_joint" type="fixed">
+    <parent link="plastic_roof_link" />
+    <child link="plastic_roof_rear_link"/>
+    <origin xyz="-0.36633 0 0.00639" rpy="0 0 0"/>
+  </joint>
+
+
+
+  <!-- Aluminium extrusions -->
+  <link name="roof_rack_1_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/aluminium_structure.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/aluminium_structure.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="roof_rack_1_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="roof_rack_1_link" />
+    <origin xyz="-0.200 -0.275 0.505" rpy="0 0 0" />
+  </joint>
+
+  <link name="roof_rack_2_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/aluminium_structure.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mbs_husky_description/meshes/aluminium_structure.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="roof_rack_2_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="roof_rack_2_link" />
+    <origin xyz="0.310 -0.275 0.505" rpy="0 0 0" />
+  </joint>
+
+
+</robot>
