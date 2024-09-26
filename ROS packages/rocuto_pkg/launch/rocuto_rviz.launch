@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find rocuto_pkg)/urdf/rocuto_with_macros.urdf.xacro'"/>
+  <remap from="/joint_states" to="/rocuto/jointstates" />
+
+  <!-- send joint values, åpner joint state publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="True"/>
+  </node>
+
+  <!-- Combine joint values (dete er lagt til) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="100.0" />
+    <param name="tf_prefix" value="rocuto" />
+  </node>
+
+  <!-- henter kontrollfilen (dette er lagt til) -->
+  <rosparam file="$(find rocuto_pkg)/config/rocuto_control.yaml" command="load"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="rocuto"
+    args="joint_state_controller link1 link2"/>
+
+  <!-- send joint values -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rocuto_pkg)/config/rviz_config.rviz"/>
+</launch>

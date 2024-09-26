@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot>
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace>rocuto</robotNamespace>
+    <controlPeriod>0.01</controlPeriod>
+    <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+  </plugin>
+
+  <plugin name="gazebo_ros_joint_state_publisher"
+    filename="libgazebo_ros_joint_state_publisher.so">
+      <ros>
+        <namespace>/</namespace>
+        <argument>--ros-args --remap joint_states:=joint_states</argument>
+      </ros>
+      <update_rate>100</update_rate>
+      <joint_name>frame_to_link1</joint_name>
+      <joint_name>link1_to_link2</joint_name>
+      <joint_name>link2_to_tool</joint_name>
+  </plugin>
+</gazebo>
+</robot>

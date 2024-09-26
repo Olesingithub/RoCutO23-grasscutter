@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="robot_description" command="$(find xacro)/rocuto.urdf.xacro '$(find rocuto_pkg)/urdf/rocuto_with_macros.urdf.xacro'"/>
+  <remap from="/joint_states" to="/rocuto/jointstates" />
+
+  <!-- send joint values -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <parsam name="use_gui" value="True"/>
+  </node>
+
+  <!-- combine joint values -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  <!-- send joint values -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rocuto_pkg)/config/rviz_config.rviz"/>
+</launch>

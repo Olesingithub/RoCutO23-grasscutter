@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <param name="rocuto" command="$(find xacro)/xacro '$(find rocuto_pkg)/urdf/rocuto_with_macros.urdf.xacro'"/>
+  <remap from="/joint_states" to="/rocuto/joint_states" />
+
+  <!-- send joint values, åpner joint state publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="True"/>
+  </node>
+
+  <!-- Combine joint values (dete er lagt til) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="100.0" />
+    <!--param name="tf_prefix" value="mobile_manipulator" /-->
+  </node>
+
+  <!-- henter kontrollfilen (dette er lagt til) -->
+  <rosparam file="$(find rocuto_pkg)/config/rocuto_control.yaml" command="load"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="rocuto"
+    args="joint_state_controller link1 link2"/>
+
+  <!-- lager simuleringsverden (vanlig) -->
+  <arg name="world" default="empty"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find rocuto_pkg)/worlds/my_world.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+
+  <node name="my_gazebo" pkg="gazebo_ros" type="spawn_model" output="screen"
+   args="-urdf -param rocuto -model rocuto -robot_namespace rocuto" />
+
+</launch>

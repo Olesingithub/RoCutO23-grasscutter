@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<robot name="rocuto" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Included URDF/XACRO Files-->
+
+  <xacro:include filename="$(find rocuto_pkg)/urdf/macros.xacro" />
+  <xacro:include filename="$(find rocuto_pkg)/urdf/materials.xacro" />
+  <xacro:include filename="$(find rocuto_pkg)/urdf/gazebo_rocuto.urdf.gazebo" />
+
+  <!-- constants -->
+  <xacro:property name="M_PI" value="3.14159"/>
+
+  <!-- world properties -->
+  <xacro:property name="world_x" value="0.0" />
+  <xacro:property name="world_y" value="0.0" />
+  <xacro:property name="world_z" value="0.5" />
+
+  <!-- frame properties -->
+  <xacro:property name="frame_x_size" value="0.2" />
+  <xacro:property name="frame_y_size" value="0.2" />
+  <xacro:property name="frame_z_size" value="1" />
+<!--<xacro:property name="mass" value="${length*height*width*density}" />-->
+
+  <!-- link Properties -->
+  <xacro:property name="link1_length" value="0.5" />
+  <xacro:property name="link1_radius" value="0.1" />
+  <!--<xacro:property name="mass" value="${length*2*radius*M_PI}" />-->
+
+  <!-- tool Properties -->
+  <xacro:property name="tool_length" value="0.1" />
+  <xacro:property name="tool_width" value="0.5" />
+  <xacro:property name="tool_height" value="0.1" />
+<!--<xacro:property name="mass" value="${length*height*width*density}" />-->
+
+  <!-- frame origin -->
+  <xacro:property name="frame_x_origin" value="0" />
+  <xacro:property name="frame_y_origin" value="0" />
+  <xacro:property name="frame_z_origin" value="0.05" />
+
+  <!-- joint 1 origin -->
+  <xacro:property name="joint1_x" value="0" />
+  <xacro:property name="joint1_y" value="${frame_y_size}" />
+  <xacro:property name="joint1_z" value="0" />
+
+  <!-- joint 2 origin -->
+  <xacro:property name="joint2_x" value="0" />
+  <xacro:property name="joint2_y" value="${link1_length}" />
+  <xacro:property name="joint2_z" value="0" />
+
+  <!-- joint 3 origin -->
+  <xacro:property name="joint3_x" value="0" />
+  <xacro:property name="joint3_y" value="${link1_length}" />
+  <xacro:property name="joint3_z" value="0" />
+
+  <!-- frame visual/collision/inertial origin -->
+  <xacro:property name="frame_x_vis" value="${frame_x_origin}" />
+  <xacro:property name="frame_y_vis" value="${frame_y_origin}" />
+  <xacro:property name="frame_z_vis" value="${frame_z_origin}" />
+
+  <!-- link 1 visual/collision/inertial origin -->
+  <xacro:property name="link1_x_vis" value="${joint1_x}" />
+  <xacro:property name="link1_y_vis" value="${joint1_y}" />
+  <xacro:property name="link1_z_vis" value="${joint1_z}" />
+
+  <!-- link 2 visual/collision/inertial origin -->
+  <xacro:property name="link2_x_vis" value="${joint2_x}" />
+  <xacro:property name="link2_y_vis" value="${joint2_y}" />
+  <xacro:property name="link2_z_vis" value="${joint2_z}" />
+
+  <!-- tool visual/collision/inertial origin -->
+  <xacro:property name="tool_x_vis" value="${joint3_x - 0.05}" />
+  <xacro:property name="tool_y_vis" value="${joint3_y + 0.25}" />
+  <xacro:property name="tool_z_vis" value="${joint3_z - 0.05}" />
+
+<!-- ramme på robotplatform -->
+  <xacro:link_box link_name="frame" length="${frame_x_size}" width="${frame_y_size}" height="${frame_z_size}" density="1" mesh_name="nofile">
+    <!-- origin visual -->
+    <origin xyz="${frame_x_vis} ${frame_y_vis} ${frame_z_vis}" rpy="0 0 0"/>
+    <!-- origin collision -->
+    <origin xyz="${frame_x_vis} ${frame_y_vis} ${frame_z_vis}" rpy="0 0 0"/>
+    <!-- origin inertia -->
+    <origin xyz="${frame_x_vis} ${frame_y_vis} ${frame_z_vis}" rpy="0 0 0"/>
+  </xacro:link_box>
+
+  <!-- leddet mellom ramme og link1 -->
+  <joint name="frame_to_link1" type="revolute">
+    <origin xyz="${joint1_x} ${joint1_y} ${joint1_z}" rpy="0 0 0"/>
+    <parent link="frame"/>
+    <child link="link1"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+    <limit effort="100" velocity="100" lower="-${pi/2}" upper="${pi/2}"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+
+  <transmission name="link1_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="frame_to_link1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="link1_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+<!-- link1 -->
+  <xacro:link_cylinder link_name="link1" radius="${link1_radius}" length="${link1_length}" density="1" mesh_name="nofile">
+    <!-- origin visual -->
+    <origin xyz="${link1_x_vis} ${link1_y_vis} ${link1_z_vis}" rpy="${M_PI/2} 0 0"/>
+    <!-- origin collision -->
+    <origin xyz="${link1_x_vis} ${link1_y_vis} ${link1_z_vis}" rpy="${M_PI/2} 0 0"/>
+    <!-- origin inertia -->
+    <origin xyz="${link1_x_vis} ${link1_y_vis} ${link1_z_vis}" rpy="${M_PI/2} 0 0"/>
+  </xacro:link_cylinder>
+
+  <!-- leddet mellom link1 og link2 -->
+  <joint name="link1_to_link2" type="revolute">
+    <origin xyz="${joint2_x} ${joint2_y} ${joint2_z}" rpy="0 0 0"/>
+    <parent link="link1"/>
+    <child link="link2"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+    <limit effort="100" velocity="100" lower="-${3*pi/4}" upper="${3*pi/4}"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+
+  <transmission name="link2_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="link1_to_link2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="link2_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+<!-- link2 -->
+  <xacro:link_cylinder link_name="link2" radius="${link1_radius}" length="${link1_length}" density="1" mesh_name="nofile">
+    <!-- origin visual -->
+    <origin xyz="${link2_x_vis} ${link2_y_vis} ${link2_z_vis}" rpy="${M_PI/2} 0 0"/>
+    <!-- origin collision -->
+    <origin xyz="${link2_x_vis} ${link2_y_vis} ${link2_z_vis}" rpy="${M_PI/2} 0 0"/>
+    <!-- origin inertia -->
+    <origin xyz="${link2_x_vis} ${link2_y_vis} ${link2_z_vis}" rpy="${M_PI/2} 0 0"/>
+  </xacro:link_cylinder>
+
+<!-- Dette er ikke et ledd bare kobling mellom link2 og tool -->
+  <joint name="link2_to_tool" type="fixed">
+    <origin xyz="${joint3_x} ${joint3_y} ${joint3_z}" rpy="0 0 0"/>
+    <parent link="link2"/>
+    <child link="tool"/>
+    <!--axis xyz="0 0 1" rpy="0 0 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/-->
+  </joint>
+
+<!-- tool -->
+  <xacro:link_box link_name="tool" length="${tool_length}" width="${tool_width}" height="${tool_height}" density="1" mesh_name="nofile">
+    <!-- origin visual -->
+    <origin xyz="${tool_x_vis} ${tool_y_vis} ${tool_z_vis}" rpy="0 0 0"/>
+    <!-- origin collision -->
+    <origin xyz="${tool_x_vis} ${tool_y_vis} ${tool_z_vis}" rpy="0 0 0"/>
+    <!-- origin inertia -->
+    <origin xyz="${tool_x_vis} ${tool_y_vis} ${tool_z_vis}" rpy="0 0 0"/>
+  </xacro:link_box>
+
+<!-- Fixed joint to make frame static in world -->
+<link name="world" />
+
+ <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link = "frame" />
+    <origin xyz="${world_x} ${world_y} ${world_z}" rpy="0.0 0.0 0.0" />
+ </joint>
+
+</robot>
